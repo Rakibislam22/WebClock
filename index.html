@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alarm Clock</title>
+    <link rel="stylesheet" href="static/style.css">
+    <style>
+        .copyright {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.9rem;
+            color: #ffffffa1;
+        }
+    </style>
+</head>
+<body>
+    <div class="copyright">© 2025 Rakib Ali.. All rights reserved.</div>
+
+    <div class="container">
+        <h1>⏰ Alarm Clock</h1>
+        <div id="clock">--:--:--</div>
+
+        <input type="time" id="alarmTime">
+        <button onclick="setAlarm()">Set Alarm</button>
+        <button onclick="stopAlarm()">Stop Alarm</button>
+
+        <p id="status">No alarm set.</p>
+
+        <audio id="alarmSound" src="{{ url_for('static', filename='alarm.mp3') }}" preload="auto"></audio>
+    </div>
+
+    <script>
+        const clock = document.getElementById('clock');
+        const status = document.getElementById('status');
+        const alarmSound = document.getElementById('alarmSound');
+
+        let alarmTime = null;
+        let alarmSet = false;
+
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            clock.textContent = timeString;
+
+            if (alarmSet && timeString === alarmTime) {
+                alarmSound.play();
+                status.textContent = "⏰ Alarm ringing!";
+            }
+        }
+
+        function setAlarm() {
+            const input = document.getElementById('alarmTime').value;
+            if (!input) {
+                alert("Please select a valid time.");
+                return;
+            }
+
+            const [hours, minutes] = input.split(":");
+            const now = new Date();
+            now.setHours(hours);
+            now.setMinutes(minutes);
+            now.setSeconds(0);
+
+            alarmTime = now.toLocaleTimeString();
+            alarmSet = true;
+            status.textContent = `Alarm set for ${alarmTime}`;
+        }
+
+        function stopAlarm() {
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
+            alarmSet = false;
+            status.textContent = "Alarm stopped.";
+        }
+
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
